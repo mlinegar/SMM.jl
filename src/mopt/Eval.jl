@@ -19,14 +19,14 @@
 """
 mutable struct Eval
 
-	value        :: Float64
-	time         :: Float64
+	value        :: Real
+	time         :: Real
 	params       :: OrderedDict
 	simMoments   :: OrderedDict
 	dataMoments  :: OrderedDict
 	dataMomentsW :: OrderedDict
 	status       :: Int64
-    prob         :: Float64
+    prob         :: Real
     accepted     :: Bool
 	options      :: Dict
 
@@ -35,10 +35,10 @@ mutable struct Eval
 		this.value        = -1.0
 		this.time         = time()
 		this.status       = -1
-		this.dataMoments  = OrderedDict{Symbol,Float64}()
-		this.dataMomentsW = OrderedDict{Symbol,Float64}()
-		this.params       = OrderedDict{Symbol,Float64}()
-		this.simMoments   = OrderedDict{Symbol,Float64}()
+		this.dataMoments  = OrderedDict{Symbol,Real}()
+		this.dataMomentsW = OrderedDict{Symbol,Real}()
+		this.params       = OrderedDict{Symbol,Real}()
+		this.simMoments   = OrderedDict{Symbol,Real}()
         this.prob = 0.0
         this.accepted = false
 		this.options      = Dict()
@@ -49,10 +49,10 @@ mutable struct Eval
 		this.value        = -1.0
 		this.time         = time()
 		this.status       = -1
-		this.dataMoments  = OrderedDict{Symbol,Float64}()
-		this.dataMomentsW = OrderedDict{Symbol,Float64}()
+		this.dataMoments  = OrderedDict{Symbol,Real}()
+		this.dataMomentsW = OrderedDict{Symbol,Real}()
 		this.params       = OrderedDict()
-		this.simMoments   = OrderedDict{Symbol,Float64}()
+		this.simMoments   = OrderedDict{Symbol,Real}()
 		this.options      = Dict()
         this.prob = 0.0
         this.accepted = false
@@ -84,10 +84,10 @@ mutable struct Eval
 		this.value        = -1.0
 		this.time         = time()
 		this.status       = -1
-		this.dataMoments  = OrderedDict{Symbol,Float64}()
-		this.dataMomentsW = OrderedDict{Symbol,Float64}()
-		this.params       = OrderedDict{Symbol,Float64}()
-		this.simMoments   = OrderedDict{Symbol,Float64}()
+		this.dataMoments  = OrderedDict{Symbol,Real}()
+		this.dataMomentsW = OrderedDict{Symbol,Real}()
+		this.params       = OrderedDict{Symbol,Real}()
+		this.simMoments   = OrderedDict{Symbol,Real}()
 		this.options      = Dict()
         this.prob = 0.0
         this.accepted = false
@@ -109,10 +109,10 @@ mutable struct Eval
         this.value        = -1.0
         this.time         = time()
         this.status       = -1
-        this.dataMoments  = OrderedDict{Symbol,Float64}()
-        this.dataMomentsW = OrderedDict{Symbol,Float64}()
-        this.params       = OrderedDict{Symbol,Float64}()
-        this.simMoments   = OrderedDict{Symbol,Float64}()
+        this.dataMoments  = OrderedDict{Symbol,Real}()
+        this.dataMomentsW = OrderedDict{Symbol,Real}()
+        this.params       = OrderedDict{Symbol,Real}()
+        this.simMoments   = OrderedDict{Symbol,Real}()
         this.options      = Dict()
         this.prob = 0.0
         this.accepted = false
@@ -130,21 +130,21 @@ mutable struct Eval
         return this
     end
 
-	function Eval(p::Union{Dict,OrderedDict},m::Dict{Symbol,Float64})
+	function Eval(p::Union{Dict,OrderedDict},m::Dict{Symbol,Real})
 		this              = Eval()
 		this.value        = -1.0
 		this.time         = time()
 		this.status       = -1
-        this.dataMoments  = OrderedDict{Symbol,Float64}()
-        this.params       = OrderedDict{Symbol,Float64}()
+        this.dataMoments  = OrderedDict{Symbol,Real}()
+        this.params       = OrderedDict{Symbol,Real}()
         for (k,v) in p
             this.params[k] = v
         end
         for (k,v) in m
             this.dataMoments[k] = v
         end
-		this.dataMomentsW = OrderedDict{Symbol,Float64}()
-		this.simMoments   = OrderedDict{Symbol,Float64}()
+		this.dataMomentsW = OrderedDict{Symbol,Real}()
+		this.simMoments   = OrderedDict{Symbol,Real}()
 		this.options      = Dict()
         this.prob = 0.0
         this.accepted = false
@@ -174,15 +174,15 @@ function finish(ev::Eval)
 	ev.time =  time() - ev.time
 end
 
-param(ev::Eval,ll::Array{Symbol,1})    = Float64[ ev.params[i] for i in ll]
-param(ev::Eval,ll::Array{Any,1})       = Float64[ ev.params[i] for i in ll]
+param(ev::Eval,ll::Array{Symbol,1})    = Real[ ev.params[i] for i in ll]
+param(ev::Eval,ll::Array{Any,1})       = Real[ ev.params[i] for i in ll]
 param(ev::Eval)                        = param(ev,collect(keys(ev.params)))
 param(ev::Eval,s::Symbol)              = ev.params[s]
 
 paramd(ev::Eval)                       = ev.params
 
 
-dataMoment(ev::Eval,ll::Array{Symbol,1})  = Float64[ ev.dataMoments[i] for i in ll]
+dataMoment(ev::Eval,ll::Array{Symbol,1})  = Real[ ev.dataMoments[i] for i in ll]
 dataMoment(ev::Eval,s::Symbol)         = ev.dataMoments[s]
 dataMoment(ev::Eval)                      = dataMoment(ev,collect(keys(ev.dataMoments)))
 
@@ -195,7 +195,7 @@ Obtain all data momoents as dict
 dataMomentd(ev::Eval) = ev.dataMoments
 
 dataMomentW(ev::Eval)                      = dataMomentW(ev,collect(keys(ev.dataMomentsW)))
-dataMomentW(ev::Eval,ll::Array{Symbol,1}) = Float64[ ev.dataMomentsW[i] for i in ll]
+dataMomentW(ev::Eval,ll::Array{Symbol,1}) = Real[ ev.dataMomentsW[i] for i in ll]
 dataMomentW(ev::Eval,s::Symbol)= ev.dataMomentsW[s]
 
 
@@ -211,12 +211,12 @@ function fill(p::Any,ev::Eval)
 	end
 end
 
-function setValue!(ev::Eval,value::Float64)
+function setValue!(ev::Eval,value::Real)
 	ev.value = value
 end
 
 
-function setMoments!(ev::Eval,k::Symbol,value::Float64)
+function setMoments!(ev::Eval,k::Symbol,value::Real)
 	ev.simMoments[k] = value
 end
 
